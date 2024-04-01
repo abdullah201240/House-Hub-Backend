@@ -1,6 +1,8 @@
 import HouseOwner from '../model/houseOwner.js';
 import bcrypt from 'bcrypt';
 import JoinHouse from '../model/joinHouseModel.js';
+import {createTransport} from 'nodemailer'
+
 const HTTP_STATUS_OK = 200;
 const HTTP_STATUS_CREATED = 201;
 const HTTP_STATUS_BAD_REQUEST = 400;
@@ -91,7 +93,7 @@ const HouseOwnerRequest = async (req, res) => {
       return res.status(400).json({ error: 'Email parameter is missing.' });
     }
 
-    const pendingInfo = await JoinHouse.find({ userEmail: query, status: 'Pending' }).exec();
+    const pendingInfo = await JoinHouse.find({ userEmail: query }).exec();
     
     if (!pendingInfo || pendingInfo.length === 0) {
       return res.status(404).json({ message: 'No pending info found for the provided email.' });
@@ -113,6 +115,59 @@ const Housemember = async (req, res) => {
   }
 
 }
+const UpdateUserStatus = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { newStatus } = req.body;
+
+    const updatedOwner = await JoinHouse.findOneAndUpdate({ userEmail: email }, { status: newStatus }, { new: true });
+
+    let subject, message;
+    if (newStatus === "Accepted") {
+      subject = `Your House Approval Request has been Accepted by HouseHub!`;
+      message = `Great news! Your house approval request has been accepted by HouseHub!<br> Congratulations on meeting our standards. You're now a valued member of our community!<br> Best,<br> HouseHub Team`;
+    } else if (newStatus === "Rejected") {
+      subject = `Your House Approval Request has been Rejected by HouseHub`;
+      message = `We're sorry to inform you that your house approval request has been rejected by HouseHub.<br> If you have any questions or concerns, please feel free to contact us.<br> Best,<br> HouseHub Team`;
+    } else {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    const transporter = createTransport({
+      host: "smtp-relay.sendinblue.com",
+      port: 587,
+      auth: {
+        user: user,
+        pass: pass,
+      }
+    });
+
+    const mailOptions = {
+      from: 'househub@gmail.com',
+      to: email,
+      subject: subject,
+      html: message
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
+    if (!updatedOwner) {
+      return res.status(404).json({ error: 'House owner not found' });
+    }
+
+    res.json(updatedOwner);
+  } catch (error) {
+    console.error('Error updating house owner status:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember};
+
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus};
