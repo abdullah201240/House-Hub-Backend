@@ -103,5 +103,16 @@ const HouseOwnerRequest = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 }
+const Housemember = async (req, res) => {
+  const email = req.query.email;
+  try {
+    const owners = await JoinHouse.find({ houseOwnerEmail: email  });
+    res.json(owners);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest};
+}
+
+
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember};
