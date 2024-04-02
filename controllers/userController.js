@@ -139,9 +139,24 @@ const UserTask = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+const UserUpdateTask = async (req, res) => {
+  try {
+    const id = req.params.id;
+    
 
+    const updatedTask = await Task.findByIdAndUpdate(id, { taskStatus: "completed" }, { new: true });
 
-export { Signup, Login,Search ,Join,HouseInfo,UserTask};
+    if (!updatedTask) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json(updatedTask);
+  } catch (error) {
+    console.error('Error updating task status:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+export { Signup, Login,Search ,Join,HouseInfo,UserTask,UserUpdateTask};
 
 
 
