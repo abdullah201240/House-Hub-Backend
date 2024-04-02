@@ -1,6 +1,8 @@
 import HouseOwner from '../model/houseOwner.js';
 import bcrypt from 'bcrypt';
 import JoinHouse from '../model/joinHouseModel.js';
+import Task from '../model/addTask.js';
+import User from '../model/userModel.js';
 import {createTransport} from 'nodemailer'
 import {user,pass} from '../config.js'
 
@@ -169,6 +171,38 @@ const UpdateUserStatus = async (req, res) => {
   }
 }
 
+const HouseOwnerAddTask = async (req, res) => {
+  try {
+    const { taskName, taskDescription, taskDate, houseOwnerName, houseOwnerEmail, houseOwnerPhone, allocatorEmail } = req.body;
 
+    const allocatorDetails = await User.findOne({ email: allocatorEmail });
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus};
+    if (!allocatorDetails) {
+      return res.status(404).json({ message: "Allocator not found." });
+    }
+
+    const { name: taskAllocatorName, phone: taskAllocatorPhone } = allocatorDetails;
+
+    const newTask = new Task({
+      taskName,
+      taskDescription,
+      taskDate,
+      taskStatus: "pending",
+      taskAllocatorName,
+      taskAllocatorPhone,
+      taskAllocatorEmail: allocatorEmail,
+      houseOwnerName,
+      houseOwnerEmail,
+      houseOwnerPhone
+    });
+
+    await newTask.save();
+
+    res.status(201).json({ message: 'Task created successfully.', task: newTask });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+
+}
+
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask};
