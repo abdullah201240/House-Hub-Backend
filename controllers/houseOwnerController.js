@@ -2,6 +2,7 @@ import HouseOwner from '../model/houseOwner.js';
 import bcrypt from 'bcrypt';
 import JoinHouse from '../model/joinHouseModel.js';
 import {createTransport} from 'nodemailer'
+import {user,pass} from '../config.js'
 
 const HTTP_STATUS_OK = 200;
 const HTTP_STATUS_CREATED = 201;
@@ -93,7 +94,7 @@ const HouseOwnerRequest = async (req, res) => {
       return res.status(400).json({ error: 'Email parameter is missing.' });
     }
 
-    const pendingInfo = await JoinHouse.find({ userEmail: query }).exec();
+    const pendingInfo = await JoinHouse.find({ houseOwnerEmail: query }).exec();
     
     if (!pendingInfo || pendingInfo.length === 0) {
       return res.status(404).json({ message: 'No pending info found for the provided email.' });
