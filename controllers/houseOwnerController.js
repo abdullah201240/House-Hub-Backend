@@ -204,5 +204,18 @@ const HouseOwnerAddTask = async (req, res) => {
   }
 
 }
+const HouseOwnerTask = async(req,res) => {
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask};
+const email = req.query.email;
+  try {
+    const owners = await Task.find({ houseOwnerEmail: email  });
+    res.json(owners);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
+
+
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask};
