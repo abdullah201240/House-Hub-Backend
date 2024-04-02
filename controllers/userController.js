@@ -2,7 +2,7 @@ import User from '../model/userModel.js';
 import bcrypt from 'bcrypt';
 import HouseOwner from '../model/houseOwner.js';
 import JoinHouse from '../model/joinHouseModel.js';
-
+import Task from '../model/addTask.js';
 const Signup = async (req, res) => {
   try {
     const { name, phone, email, password } = req.body;
@@ -124,9 +124,24 @@ const HouseInfo = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+const UserTask = async (req, res) => {
+  const email = req.query.email;
+  try {
+
+    const owners = await Task.find({ taskAllocatorEmail: email }).sort({ taskDate: 1 }); 
+
+    owners.forEach(owner => {
+      console.log(owner.taskDate);
+    });
+
+    res.json(owners);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 
-export { Signup, Login,Search ,Join,HouseInfo};
+export { Signup, Login,Search ,Join,HouseInfo,UserTask};
 
 
 
