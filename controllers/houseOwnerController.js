@@ -204,18 +204,39 @@ const HouseOwnerAddTask = async (req, res) => {
   }
 
 }
-const HouseOwnerTask = async(req,res) => {
-
-const email = req.query.email;
+const HouseOwnerTask = async (req, res) => {
+  const email = req.query.email;
   try {
-    const owners = await Task.find({ houseOwnerEmail: email  });
+
+    const owners = await Task.find({ houseOwnerEmail: email }).sort({ taskDate: 1 }); 
+
+    owners.forEach(owner => {
+      console.log(owner.taskDate);
+    });
+
     res.json(owners);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
+const HouseOwnerTaskDelete = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const task = await Task.findByIdAndDelete(id);
+    if (task) {
+      return res.status(200).json({ message: 'Task deleted successfully' });
+    } else {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask};
+
+
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask,HouseOwnerTaskDelete};

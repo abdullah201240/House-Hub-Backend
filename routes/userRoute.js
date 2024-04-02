@@ -1,5 +1,5 @@
 import { Signup, Login ,Search,Join,HouseInfo} from '../controllers/userController.js';
-import { HouseOwnerLogin, HouseOwnerSignup,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask} from '../controllers/houseOwnerController.js';
+import { HouseOwnerLogin, HouseOwnerSignup,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask,HouseOwnerTaskDelete} from '../controllers/houseOwnerController.js';
 import upload from '../middleware/upload.js'; 
 import cors from 'cors';
 import express from 'express';
@@ -35,5 +35,5 @@ router.put('/UpdateUserStatus/:email/updateStatus',UpdateUserStatus);
 
 router.post('/HouseOwnerAddTask',HouseOwnerAddTask);
 router.get('/HouseOwnerTask',HouseOwnerTask);
-
+router.delete('/HouseOwnerTaskDelete/:id', HouseOwnerTaskDelete);
 export default router;
