@@ -1,4 +1,4 @@
-import { Signup, Login ,Search,Join,HouseInfo,UserTask,UserUpdateTask} from '../controllers/userController.js';
+import { Signup, Login ,Search,Join,HouseInfo,UserTask,UserUpdateTask,Profile,UpdateProfile} from '../controllers/userController.js';
 import { HouseOwnerLogin, HouseOwnerSignup,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask,HouseOwnerTaskDelete,HouseOwnerProfile,HouseOwnerUpdateProfile} from '../controllers/houseOwnerController.js';
 import upload from '../middleware/upload.js'; 
 import cors from 'cors';
@@ -44,5 +44,9 @@ router.put('/UserUpdateTask/:id', UserUpdateTask);
 router.get('/HouseOwnerProfile', HouseOwnerProfile);
 
 router.put('/HouseOwnerUpdateProfile/:email', HouseOwnerUpdateProfile);
+
+router.get('/Profile', Profile);
+router.put('/UpdateProfile', upload.single('photo'), UpdateProfile);
+
 
 export default router;

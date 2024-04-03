@@ -156,7 +156,48 @@ const UserUpdateTask = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-export { Signup, Login,Search ,Join,HouseInfo,UserTask,UserUpdateTask};
+const Profile = async (req, res) => {
+  const email = req.query.email;
+
+  const user = await User.find({ email: email }); 
+  res.status(200).json({user});
+}
+const UpdateProfile = async (req, res) => {
+  const { name, phone, email } = req.body;
+  console.log('Name:', name);
+  console.log('Phone:', phone);
+  console.log('Email:', email);
+
+  try {
+    let updatedUserData = { name: name, phone: phone };
+    if (req.file) {
+      console.log('File uploaded:', req.file);
+      updatedUserData.photo = req.file.path; 
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email }, 
+      updatedUserData, 
+      { new: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+
+
+
+
+
+export { Signup, Login,Search ,Join,HouseInfo,UserTask,UserUpdateTask,Profile,UpdateProfile};
 
 
 
