@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  photo: {
+    type: String,
+    default: 'upload/profile.jpg'
+  },
   password: {
     type: String,
     required: true

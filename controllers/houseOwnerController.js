@@ -71,7 +71,7 @@ const houseOwnerLogin = async (req, res) => {
       return res.status(HTTP_STATUS_UNAUTHORIZED).json({ error: 'Your account is not yet accepted' });
     }
 
-    const { name, address, phone } = houseOwner;
+    const { name, address, phone,addressproof } = houseOwner;
     return res.status(200).json({
       message: 'Login successful',
       data: {
@@ -79,6 +79,7 @@ const houseOwnerLogin = async (req, res) => {
         address,
         phone,
         name,
+        addressproof,
       },
     });
 
@@ -233,10 +234,31 @@ const HouseOwnerTaskDelete = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+const HouseOwnerProfile = async (req, res) => {
+  const email = req.query.email;
+
+  const owners = await HouseOwner.find({ email: email }); 
+  res.status(200).json({owners});
+}
 
 
 
+const HouseOwnerUpdateProfile = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { phone } = req.body;
+    const updatedHouseOwner = await HouseOwner.findOneAndUpdate({ email }, { phone }, { new: true });
+    if (!updatedHouseOwner) {
+      return res.status(404).json({ error: 'House owner not found' });
+    }
+    res.json({ message: 'Phone number updated successfully', updatedHouseOwner });
+
+
+  } catch (error) {
+    console.error('Error updating phone number:', error);
+    res.status(500).json({ error: 'Internal server error' });  }
+};
 
 
 
-export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask,HouseOwnerTaskDelete};
+export { houseOwnerSignup as HouseOwnerSignup, houseOwnerLogin as HouseOwnerLogin ,HouseOwnerRequest,Housemember,UpdateUserStatus,HouseOwnerAddTask,HouseOwnerTask,HouseOwnerTaskDelete,HouseOwnerProfile,HouseOwnerUpdateProfile};
